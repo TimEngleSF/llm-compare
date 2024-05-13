@@ -60,3 +60,27 @@ class AnthropicClient:
         execution_time = round(end_time - start_time, 4)
 
         print(f"Model: {model} output ({execution_time}s): {response.content[0].text}")
+
+    def split(self, obj, model="claude-3-opus-20240229", temp=1.0):
+        start_time = time.time()
+        response = self.client.messages.create(
+            model=model,
+            max_tokens=1000,
+            temperature=temp,
+            system=f"""
+                            I will give you an object to split into its components. You will output the components of the object.                    
+                            The returned objects should be conceptually distinct from one another.
+                            
+                            Each output should be a common or familiar item, at most 2 or 3 words.
+    
+                            Respond in the form of a JSON list.
+    
+                            Examples:
+                            {split_examples}
+                    """,
+            messages=[{"role": "user", "content": f"Split this object: {obj}"}],
+        )
+        end_time = time.time()
+        execution_time = round(end_time - start_time, 4)
+
+        print(f"Model: {model} output ({execution_time}s): {response.content[0].text}")

@@ -43,7 +43,7 @@ def main():
         "Change GPT Temp by typing 'gtmp=0.5' or 'gtmp=1.0' etc. Range 0.0 -> 2.0. Default 1.0."
     )
     print(
-        "Change Claude Temp by typing 'ctmp=0.5' or 'ctmp=1.0' etc. Rabge 0.0 -> 1.0. Default 0.5."
+        "Change Claude Temp by typing 'ctmp=0.5' or 'ctmp=1.0' etc. Range 0.0 -> 1.0. Default 0.5."
     )
     while True:
         prompt = input("> ")
@@ -60,9 +60,10 @@ def main():
                 openai.merge(prompt_list, model="gpt-4o", temp=gtmp)
                 anthropic.merge(prompt_list, temp=ctmp)
             if verb == "split" or verb == "s":
-                print(f"Splitting {prompt_list}")
+                print(f"Splitting {",".join(prompt_list)}")
                 openai.split(prompt_list, temp=gtmp)
-                openai.split(prompt_list, model="gpt-4o", temp=gtmp)
+                openai.split(prompt_list, model="gpt-4o", temp=gtmp) 
+                anthropic.split(prompt_list, temp=ctmp)
             if verb == "exit":
                 break
 
