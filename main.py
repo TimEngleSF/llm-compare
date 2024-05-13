@@ -32,11 +32,6 @@ def create_words_list(prompt: str):
 
 
 def main():
-    # TODO: Create a ratio function to set the temperature of Claude to comparable levels to OpenAI
-    # OpenAI temp range 0.0 -> 2.0 default 1.0
-    # Claude temp range 0.0 -> 1.0 default 0.5
-    gtmp = 1.0
-    ctmp = 0.5
 
     print("Enter your prompts. Type 'exit' to quit.")
     print(
@@ -51,14 +46,18 @@ def main():
             break
         elif prompt.startswith("gtmp="):
             gtmp = float(prompt.split("=")[1])
-            print(f"Setting GPT temperature to {gtmp}")
+            openai.set_temp(float(prompt.split("=")[1]))
+            print(f"Setting GPT temperature to {openai.get_temp()}")
+        elif prompt.startswith("ctmp="):
+            anthropic.set_temp(float(prompt.split("=")[1]))
+            print(f"Setting Claude temperature to {anthropic.get_temp()}")
         else:
             verb, prompt_list = create_words_list(prompt)
             if verb == "merge" or verb == "m":
                 print(f"Merging {",".join(prompt_list)}")
-                openai.merge(prompt_list, temp=gtmp)
-                openai.merge(prompt_list, model="gpt-4o", temp=gtmp)
-                anthropic.merge(prompt_list, temp=ctmp)
+                openai.merge(prompt_list, )
+                openai.merge(prompt_list, model="gpt-4o" )
+                anthropic.merge(prompt_list, )
             if verb == "split" or verb == "s":
                 print(f"Splitting {",".join(prompt_list)}")
                 openai.split(prompt_list, temp=gtmp)

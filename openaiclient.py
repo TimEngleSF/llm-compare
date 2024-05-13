@@ -45,8 +45,24 @@ class OpenAIClient:
             "gpt-4-turbo-preview": "GPT-4 Turbo",
             "gpt-4o": "GPT-4o",
         }
+        self.temp = 1.0
 
-    def merge(self, obj, model="gpt-4-turbo-preview", temp=1.0):
+    def get_temp(self):
+        return self.temp
+
+    def set_temp(self, temp):
+        if temp < 0.0:
+            self.temp = 0.0
+        elif temp > 2.0:
+            self.temp = 2.0
+        else:
+            self.temp = temp
+
+    def merge(
+        self,
+        obj,
+        model="gpt-4-turbo-preview",
+    ):
 
         start_time = time.time()
 
@@ -70,15 +86,15 @@ class OpenAIClient:
                 {"role": "user", "content": json.dumps({"ingredients": obj})},
             ],
             response_format={"type": "json_object"},
-            temperature=temp,
+            temperature=self.temp,
         )
         end_time = time.time()
         execution_time = round(end_time - start_time, 4)
         print(
-            f"Model: {self.model_dict[model]} output ({execution_time}s) temp({temp}) : {response.choices[0].message.content} "
+            f"Model: {self.model_dict[model]} output ({execution_time}s) temp({self.temp}) : {response.choices[0].message.content} "
         )
 
-    def split(self, obj, model="gpt-4-turbo-preview", temp=1.0):
+    def split(self, obj, model="gpt-4-turbo-preview"):
         start_time = time.time()
 
         response = self.client.chat.completions.create(
@@ -101,13 +117,13 @@ class OpenAIClient:
                 {"role": "user", "content": f"Split this object: {obj}"},
             ],
             response_format={"type": "json_object"},
-            temperature=temp,
+            temperature=self.temp,
         )
 
         end_time = time.time()
         execution_time = round(end_time - start_time, 4)
         print(
-            f"Model: {self.model_dict[model]} output ({execution_time}s) temp({temp}): {response.choices[0].message.content}"
+            f"Model: {self.model_dict[model]} output ({execution_time}s) temp({self.temp}): {response.choices[0].message.content}"
         )
 
 
