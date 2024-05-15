@@ -1,39 +1,14 @@
-import re
-from dotenv import load_dotenv
-
-from openaiclient import OpenAIClient
-from anthropicclient import AnthropicClient
-
-
-load_dotenv
-
-
-# Initialize the OpenAI and Anthropic clients
-class App:
-    def __init__(self):
-        self.openai = OpenAIClient()
-        self.anthropic = AnthropicClient()
+import asyncio
+from App import App, create_words_list
 
 
 app = App()
 openai = app.openai
 anthropic = app.anthropic
+gemini = app.gemini
 
-
-# Creates a list of words from the prompt
-def create_words_list(prompt: str):
-    subjects = [
-        p.replace('"', "") for p in re.split('( |\\".*?\\")', prompt) if p.strip()
-    ]
-
-    v = subjects[0]
-    subjects = subjects[1:]
-    return v, subjects
-
-
-def main():
-
-    print("Enter your prompts. Type 'exit' to quit.")
+async def main():
+    print("Enter your prompts. Type 'exit' to quit. Type 'help' for more information.")
     print(
         "Change GPT Temp by typing 'gtmp=0.5' or 'gtmp=1.0' etc. Range 0.0 -> 2.0. Default 1.0."
     )
@@ -45,7 +20,6 @@ def main():
         if prompt.lower() == "exit":
             break
         elif prompt.startswith("gtmp="):
-            gtmp = float(prompt.split("=")[1])
             openai.set_temp(float(prompt.split("=")[1]))
             print(f"Setting GPT temperature to {openai.get_temp()}")
         elif prompt.startswith("ctmp="):
@@ -54,18 +28,17 @@ def main():
         else:
             verb, prompt_list = create_words_list(prompt)
             if verb == "merge" or verb == "m":
+                print("")
                 print(f"Merging {",".join(prompt_list)}")
-                openai.merge(prompt_list, )
-                openai.merge(prompt_list, model="gpt-4o" )
-                anthropic.merge(prompt_list, )
+                await app.merge(prompt_list)
             if verb == "split" or verb == "s":
+                print("")
                 print(f"Splitting {",".join(prompt_list)}")
-                openai.split(prompt_list, temp=gtmp)
-                openai.split(prompt_list, model="gpt-4o", temp=gtmp) 
-                anthropic.split(prompt_list, temp=ctmp)
+                await app.split(prompt_list)
+                gemini.split(prompt_list)
             if verb == "exit":
                 break
 
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())
