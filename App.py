@@ -23,7 +23,9 @@ class App:
         self.openai = OpenAIClient(api_key=OPENAI_API_KEY)
         self.anthropic = AnthropicClient(api_key=ANTHROPIC_API_KEY)
         self.gemini = GeminiClient(api_key=GEMINI_API_KEY)
-        self.open_router = OpenRouterClient(api_key=OPEN_ROUTER_API_KEY)
+        self.llama = OpenRouterClient(
+            api_key=OPEN_ROUTER_API_KEY, max_temp=5.0, temp=0.5
+        )
 
     def print_results(self, results: List):
         data = [["MODEL", "TIME", "OUTPUT", "TEMP", "TOP_K"]]
@@ -60,7 +62,7 @@ class App:
             self.openai.merge(prompt_list),
             self.openai.merge(prompt_list, model="gpt-4o"),
             self.anthropic.merge(prompt_list),
-            self.open_router.merge(prompt_list),
+            self.llama.merge(prompt_list),
         )
         self.print_results(results)
 
@@ -69,9 +71,17 @@ class App:
             self.openai.split(prompt_list),
             self.openai.split(prompt_list, model="gpt-4o"),
             self.anthropic.split(prompt_list),
-            self.open_router.split(prompt_list),
+            self.llama.split(prompt_list),
         )
         self.print_results(results)
+
+    def scale_value(self, input_value, input_range, output_range):
+        input_min, input_max = input_range
+        output_min, output_max = output_range
+        scaled_value = (input_value - input_min) * (output_max - output_min) / (
+            input_max - input_min
+        ) + output_min
+        return scaled_value
 
 
 def create_words_list(prompt: str):
@@ -81,4 +91,5 @@ def create_words_list(prompt: str):
 
     v = subjects[0]
     subjects = subjects[1:]
+    subjects.sort()
     return v, subjects
