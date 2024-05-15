@@ -20,6 +20,12 @@ Run by `python main.py`
 
 `split` or `s` split a word
 
+## Services used
+
+-   [OpenAI](https://www.openai.com)
+-   [Anthropic](https://www.anthropic.com/)
+-   [OpenRouter](https://www.openrouter.ai/)
+
 ## Examples
 
 ### Example 1
