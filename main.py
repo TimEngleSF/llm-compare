@@ -9,8 +9,9 @@ anthropic = app.anthropic
 gemini = app.gemini
 llama = app.llama
 
+
 def clear():
-    os.system('cls' if os.name == 'nt' else 'clear')
+    os.system("cls" if os.name == "nt" else "clear")
 
 
 async def main():
@@ -22,11 +23,17 @@ async def main():
             break
         elif prompt.lower() == "help" or prompt.lower() == "h":
             clear()
-            os.system('cls' if os.name == 'nt' else 'clear')
-            print("Set the temperature for the models by typing 'temp=' followed by the temperature value. Range (0, 2).")
+            os.system("cls" if os.name == "nt" else "clear")
+            print(
+                "Set the temperature for the models by typing 'temp=' followed by the temperature value. Range (0, 2)."
+            )
             print(" ")
-            print("Merge objects by typing 'merge' or 'm' followed by the objects you want to merge.")
-            print("Split objects by typing 'split' or 's' followed by the objects you want to split.") 
+            print(
+                "Merge objects by typing 'merge' or 'm' followed by the objects you want to merge."
+            )
+            print(
+                "Split objects by typing 'split' or 's' followed by the objects you want to split."
+            )
             print(" ")
             print("Type 'exit' to quit.")
             print(" ")
@@ -43,11 +50,11 @@ async def main():
             verb, prompt_list = create_words_list(prompt)
             if verb == "merge" or verb == "m":
                 print("")
-                print(f"Merging {",".join(prompt_list)}")
+                print(f'Merging {",".join(prompt_list)}')
                 await app.merge(prompt_list)
             if verb == "split" or verb == "s":
                 print("")
-                print(f"Splitting {",".join(prompt_list)}")
+                print(f'Splitting {",".join(prompt_list)}')
                 await app.split(prompt_list)
                 # gemini.split(prompt_list)
             if verb == "exit":
