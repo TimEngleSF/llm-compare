@@ -1,4 +1,5 @@
 import asyncio
+import os
 from App import App, create_words_list
 
 
@@ -6,25 +7,38 @@ app = App()
 openai = app.openai
 anthropic = app.anthropic
 gemini = app.gemini
+llama = app.llama
+
+def clear():
+    os.system('cls' if os.name == 'nt' else 'clear')
+
 
 async def main():
+    clear()
     print("Enter your prompts. Type 'exit' to quit. Type 'help' for more information.")
-    print(
-        "Change GPT Temp by typing 'gtmp=0.5' or 'gtmp=1.0' etc. Range 0.0 -> 2.0. Default 1.0."
-    )
-    print(
-        "Change Claude Temp by typing 'ctmp=0.5' or 'ctmp=1.0' etc. Range 0.0 -> 1.0. Default 0.5."
-    )
     while True:
         prompt = input("> ")
         if prompt.lower() == "exit":
             break
-        elif prompt.startswith("gtmp="):
-            openai.set_temp(float(prompt.split("=")[1]))
-            print(f"Setting GPT temperature to {openai.get_temp()}")
-        elif prompt.startswith("ctmp="):
-            anthropic.set_temp(float(prompt.split("=")[1]))
-            print(f"Setting Claude temperature to {anthropic.get_temp()}")
+        elif prompt.lower() == "help" or prompt.lower() == "h":
+            clear()
+            os.system('cls' if os.name == 'nt' else 'clear')
+            print("Set the temperature for the models by typing 'temp=' followed by the temperature value. Range (0, 2).")
+            print(" ")
+            print("Merge objects by typing 'merge' or 'm' followed by the objects you want to merge.")
+            print("Split objects by typing 'split' or 's' followed by the objects you want to split.") 
+            print(" ")
+            print("Type 'exit' to quit.")
+            print(" ")
+        elif prompt.startswith("temp="):
+            temp_value = float(prompt.split("=")[1])
+            openai.set_temp(temp_value)
+            anthropic.set_temp(app.scale_value(temp_value, (0, 2), (0, 1)))
+            llama.set_temp(app.scale_value(temp_value, (0, 2), (0, 5)))
+        elif prompt.lower() == "view temp":
+            print(f"OpenAI temperature: {openai.get_temp()}")
+            print(f"Claude temperature: {anthropic.get_temp()}")
+            print(f"Llama temperature: {llama.get_temp()}")
         else:
             verb, prompt_list = create_words_list(prompt)
             if verb == "merge" or verb == "m":
@@ -35,7 +49,7 @@ async def main():
                 print("")
                 print(f"Splitting {",".join(prompt_list)}")
                 await app.split(prompt_list)
-                gemini.split(prompt_list)
+                # gemini.split(prompt_list)
             if verb == "exit":
                 break
 
